@@ -12,16 +12,66 @@ import Photos
 import RxKeyboard
 import RxSwift
 
-class MessageView: UIView {
+final class ImagePickerCarouselView: UIView {
 
-    override var canBecomeFocused: Bool {
-        return true
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        backgroundColor = .red
+
+        autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class MessageView: UIView, UITextViewDelegate {
 
     private let libraryButton = UIButton(type: .system)
     private let cameraButton = UIButton(type: .system)
     private let textView = UITextView()
     private let sendButton = UIButton(type: .system)
+
+    private let imagePickerCarouselView = ImagePickerCarouselView(frame: .zero)
+
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+
+    enum KeyboardType {
+        case keyboard, imagePicker
+    }
+
+    var keyboardType: KeyboardType = .keyboard {
+        didSet {
+            reloadInputViews()
+        }
+    }
+
+    override var inputView: UIView? {
+        switch keyboardType {
+        case .keyboard:
+            return nil
+        case .imagePicker:
+            return imagePickerCarouselView
+        }
+    }
+
+    @objc func tapLibraryButton() {
+
+        keyboardType = .imagePicker
+
+        becomeFirstResponder()
+    }
+
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+
+        keyboardType = .keyboard
+
+        return true
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -38,7 +88,9 @@ class MessageView: UIView {
 
         libraryButton.setImage(UIImage.init(named: "library"), for: .normal)
         libraryButton.translatesAutoresizingMaskIntoConstraints = false
+        libraryButton.addTarget(self, action: #selector(tapLibraryButton), for: .touchUpInside)
 
+        textView.delegate = self
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.font = UIFont.systemFont(ofSize: 18, weight: .regular)
 
@@ -73,6 +125,8 @@ class MessageView: UIView {
     
 }
 
+
+
 class ViewController: UIViewController {
 
     private let disposeBag = DisposeBag()
@@ -104,43 +158,45 @@ class ViewController: UIViewController {
             ]
             .forEach { $0.isActive = true }
 
+
+        var constraint1: NSLayoutConstraint? = nil
+        var constraint2: NSLayoutConstraint? = nil
+
         RxKeyboard
             .instance
             .visibleHeight
             .drive(onNext: { [weak self] keyboardVisibleHeight in
 
-                guard let `self` = self else { return }
+                guard let self = self else { return }
+
+                constraint1?.isActive = false
+                constraint1 = nil
+
+                constraint2?.isActive = false
+                constraint2 = nil
 
                 if keyboardVisibleHeight <= 0 {
-                    self.messageInputView.bottomAnchor.constraint(
+                    constraint1 = self.messageInputView.bottomAnchor.constraint(
                         equalTo: self.view.safeAreaLayoutGuide.bottomAnchor,
                         constant: -keyboardVisibleHeight
-                        ).isActive = true
+                        )
                 } else {
-                    self.messageInputView.bottomAnchor.constraint(
+                    constraint2 = self.messageInputView.bottomAnchor.constraint(
                         equalTo: self.view.bottomAnchor,
                         constant: -keyboardVisibleHeight
-                        ).isActive = true
+                        )
                 }
+                constraint1?.isActive = true
+                constraint2?.isActive = true
 
-                self.view.setNeedsLayout()
+//                self.view.setNeedsLayout()
+
+                UIView.animate(withDuration: 0.2, animations: {
+                    self.view.layoutIfNeeded()
+                })
 
             })
             .disposed(by: disposeBag)
-
-//        let accessoryView = UIView()
-//        accessoryView.backgroundColor = .green
-//        accessoryView.frame = .init(x: 0, y: 200, width: 100, height: 60)
-
-//        let inputView = UIView()
-//        inputView.backgroundColor = .red
-//        inputView.frame = .init(x: 100, y: 100, width: 200, height: 300)
-
-//        messageInputView.inputAccessoryView = accessoryView
-//        messageInputView.inputView = inputView
-
-        #warning("inputViewに画像のカルーセル選択画面の追加")
-
 
     }
 
