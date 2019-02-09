@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8ECB1FE14C63ABD58765829B /* Pods_KeyboardImagePicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2E3147206288007E77AAD72 /* Pods_KeyboardImagePicker.framework */; };
 		D4782C39220EAE7400FA4AA0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4782C38220EAE7400FA4AA0 /* AppDelegate.swift */; };
 		D4782C3B220EAE7400FA4AA0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4782C3A220EAE7400FA4AA0 /* ViewController.swift */; };
 		D4782C3E220EAE7400FA4AA0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4782C3C220EAE7400FA4AA0 /* Main.storyboard */; };
@@ -15,6 +16,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AE3092F9E89B2AF6459ED13B /* Pods-KeyboardImagePicker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KeyboardImagePicker.debug.xcconfig"; path = "Target Support Files/Pods-KeyboardImagePicker/Pods-KeyboardImagePicker.debug.xcconfig"; sourceTree = "<group>"; };
+		C2E3147206288007E77AAD72 /* Pods_KeyboardImagePicker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KeyboardImagePicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4782C35220EAE7400FA4AA0 /* KeyboardImagePicker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyboardImagePicker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4782C38220EAE7400FA4AA0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D4782C3A220EAE7400FA4AA0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -22,6 +25,7 @@
 		D4782C3F220EAE7500FA4AA0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D4782C42220EAE7500FA4AA0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D4782C44220EAE7500FA4AA0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F43AED598061E2A2E76F96B1 /* Pods-KeyboardImagePicker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KeyboardImagePicker.release.xcconfig"; path = "Target Support Files/Pods-KeyboardImagePicker/Pods-KeyboardImagePicker.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,17 +33,38 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8ECB1FE14C63ABD58765829B /* Pods_KeyboardImagePicker.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7CBB2955FD265ABE1B8488E7 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				AE3092F9E89B2AF6459ED13B /* Pods-KeyboardImagePicker.debug.xcconfig */,
+				F43AED598061E2A2E76F96B1 /* Pods-KeyboardImagePicker.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		CCF66039D7556D68D2FC07CF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C2E3147206288007E77AAD72 /* Pods_KeyboardImagePicker.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		D4782C2C220EAE7300FA4AA0 = {
 			isa = PBXGroup;
 			children = (
 				D4782C37220EAE7400FA4AA0 /* KeyboardImagePicker */,
 				D4782C36220EAE7400FA4AA0 /* Products */,
+				7CBB2955FD265ABE1B8488E7 /* Pods */,
+				CCF66039D7556D68D2FC07CF /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -71,9 +96,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D4782C47220EAE7500FA4AA0 /* Build configuration list for PBXNativeTarget "KeyboardImagePicker" */;
 			buildPhases = (
+				68D5D59EA4E896EBF716FF6B /* [CP] Check Pods Manifest.lock */,
 				D4782C31220EAE7400FA4AA0 /* Sources */,
 				D4782C32220EAE7400FA4AA0 /* Frameworks */,
 				D4782C33220EAE7400FA4AA0 /* Resources */,
+				573AED3735C10ACCEA420BCC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -129,6 +156,61 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		573AED3735C10ACCEA420BCC /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-KeyboardImagePicker/Pods-KeyboardImagePicker-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Reveal/Reveal.framework",
+				"${BUILT_PRODUCTS_DIR}/RxAtomic/RxAtomic.framework",
+				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
+				"${BUILT_PRODUCTS_DIR}/RxKeyboard/RxKeyboard.framework",
+				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reveal.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxAtomic.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxKeyboard.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-KeyboardImagePicker/Pods-KeyboardImagePicker-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		68D5D59EA4E896EBF716FF6B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-KeyboardImagePicker-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D4782C31220EAE7400FA4AA0 /* Sources */ = {
@@ -280,6 +362,7 @@
 		};
 		D4782C48220EAE7500FA4AA0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AE3092F9E89B2AF6459ED13B /* Pods-KeyboardImagePicker.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -297,6 +380,7 @@
 		};
 		D4782C49220EAE7500FA4AA0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F43AED598061E2A2E76F96B1 /* Pods-KeyboardImagePicker.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
