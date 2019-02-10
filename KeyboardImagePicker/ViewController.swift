@@ -12,6 +12,39 @@ import Photos
 import RxKeyboard
 import RxSwift
 
+final class ImageCell: UICollectionViewCell {
+
+    private let imageView = UIImageView()
+
+    override var isSelected: Bool {
+        didSet {
+            alpha = isSelected ? 0.3 : 1
+        }
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        addSubview(imageView)
+
+        backgroundColor = .lightGray
+
+        imageView.frame = bounds
+        imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+    }
+
+    func set(image: UIImage?) {
+        imageView.image = image
+        imageView.setNeedsDisplay()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 final class ImagePickerCarouselView: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 
     private let collectionView: UICollectionView
@@ -37,20 +70,30 @@ final class ImagePickerCarouselView: UIView, UICollectionViewDataSource, UIColle
 
         addSubview(collectionView)
 
-        collectionView.backgroundView = .white
+        collectionView.backgroundColor = .white
         collectionView.alwaysBounceHorizontal = true
+        collectionView.showsHorizontalScrollIndicator = true
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
 
         collectionView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
         collectionView.leftAnchor.constraint(equalTo: leftAnchor, constant: 0).isActive = true
         collectionView.rightAnchor.constraint(equalTo: rightAnchor, constant: 0).isActive = true
         collectionView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
 
+        collectionView.dataSource = self
+        collectionView.delegate = self
+
+        collectionView.register(ImageCell.self, forCellWithReuseIdentifier: "cell")
+
+        autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
         setup()
     }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -85,30 +128,70 @@ final class ImagePickerCarouselView: UIView, UICollectionViewDataSource, UIColle
         })
     }
 
+
+    // MARK: UICollectionViewDataSource
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+
+        #warning("先頭のセルの場合は、一覧画面表示ボタンを追加→ライブラリ画面をモーダル表示")
+
+        #warning("カルーセル中の画像を選択した場合は、モーダルで編集画面を開く")
+
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? ImageCell else { return UICollectionViewCell() }
         let item = items[indexPath.row]
-        imageManager.requestImage(for: item, targetSize: cell.bounds.size, contentMode: .aspectFill, options: nil, resultHandler: { image, info in
-            print("image", image)
-        })
-        cell.backgroundColor = .darkGray
+
+        let options = PHImageRequestOptions()
+        options.deliveryMode = .highQualityFormat
+        options.isNetworkAccessAllowed = true
+        options.version = .current
+        options.resizeMode = .exact
+
+//        imageManager.requestImageData(
+//            for: item,
+//            options: options,
+//            resultHandler: { (data, id, orientation, info) in
+//                if let data = data {
+//                    let image = UIImage(data: data)!
+//                    cell.set(image: image)
+//                }
+//        })
+
+        imageManager
+            .requestImage(
+                for: item,
+                targetSize: cell.bounds.size,
+                contentMode: .aspectFill,
+                options: nil,
+                resultHandler: { image, info in
+                    cell.set(image: image)
+            })
+
         return cell
     }
+
+    // MARK: UICollectionViewDelegate
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
+        guard let cell = collectionView.cellForItem(at: indexPath) else { return }
+        cell.isSelected = !(cell.isSelected)
+    }
+
+    // MARK: UICollectionViewDelegateFlowLayout
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        let length = (collectionView.bounds.height - collectionView.contentInset.top - collectionView.contentInset.bottom - 20) / 2
+        guard let layout = collectionViewLayout as? UICollectionViewFlowLayout else { return .zero }
+
+        let length = (collectionView.bounds.height - layout.sectionInset.top - layout.sectionInset.bottom - layout.minimumLineSpacing) / 2
         return .init(width: length, height: length)
     }
-
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 }
+
 
 class MessageView: UIView, UITextViewDelegate {
 
