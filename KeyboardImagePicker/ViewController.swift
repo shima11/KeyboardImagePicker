@@ -12,7 +12,7 @@ import Photos
 import RxKeyboard
 import RxSwift
 
-final class ImagePickerCarouselView: UIView, UICollectionViewDataSource, UICollectionViewDelegate {
+final class ImagePickerCarouselView: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 
     private let collectionView: UICollectionView
 
@@ -23,28 +23,38 @@ final class ImagePickerCarouselView: UIView, UICollectionViewDataSource, UIColle
     override init(frame: CGRect) {
 
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = .init(width: 80, height: 80)
         layout.sectionInset = .init(top: 8, left: 8, bottom: 8, right: 8)
+        layout.minimumInteritemSpacing = 2
+        layout.minimumLineSpacing = 2
+        layout.scrollDirection = .horizontal
+        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
 
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.alwaysBounceHorizontal = true
 
         super.init(frame: frame)
 
         backgroundColor = .white
-        collectionView.backgroundColor = .white
 
         addSubview(collectionView)
-        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
+        collectionView.backgroundView = .white
+        collectionView.alwaysBounceHorizontal = true
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.dataSource = self
         collectionView.delegate = self
-
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
 
-        autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        collectionView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
+        collectionView.leftAnchor.constraint(equalTo: leftAnchor, constant: 0).isActive = true
+        collectionView.rightAnchor.constraint(equalTo: rightAnchor, constant: 0).isActive = true
+        collectionView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
 
         setup()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
     }
 
     private func setup() {
@@ -81,9 +91,17 @@ final class ImagePickerCarouselView: UIView, UICollectionViewDataSource, UIColle
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-//        let item = items[indexPath.row]
+        let item = items[indexPath.row]
+        imageManager.requestImage(for: item, targetSize: cell.bounds.size, contentMode: .aspectFill, options: nil, resultHandler: { image, info in
+            print("image", image)
+        })
         cell.backgroundColor = .darkGray
         return cell
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+
+        let length = (collectionView.bounds.height - collectionView.contentInset.top - collectionView.contentInset.bottom - 20) / 2
+        return .init(width: length, height: length)
     }
 
 
