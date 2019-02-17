@@ -12,15 +12,42 @@ import Photos
 import RxKeyboard
 import RxSwift
 
-final class ImageCell: UICollectionViewCell {
+
+enum Union2<A, B> {
+    case a(A)
+    case b(B)
+}
+
+final class OperationCell: UICollectionViewCell {
 
     private let imageView = UIImageView()
 
-    override var isSelected: Bool {
-        didSet {
-            alpha = isSelected ? 0.3 : 1
-        }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        addSubview(imageView)
+
+        backgroundColor = .lightGray
+
+        imageView.frame = bounds
+        imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        imageView.contentMode = .center
+        imageView.clipsToBounds = true
     }
+
+    func set(image: UIImage?) {
+        imageView.image = image
+        imageView.setNeedsDisplay()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+final class ImageCell: UICollectionViewCell {
+
+    private let imageView = UIImageView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -48,10 +75,11 @@ final class ImageCell: UICollectionViewCell {
 final class ImagePickerCarouselView: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 
     private let collectionView: UICollectionView
+    private let libraryButton = UIButton(type: .system)
 
     private let imageManager = PHImageManager()
 
-    private var items: [PHAsset] = []
+    private var items: [Union2<PHAsset, Void>] = []
 
     override init(frame: CGRect) {
 
@@ -69,6 +97,7 @@ final class ImagePickerCarouselView: UIView, UICollectionViewDataSource, UIColle
         backgroundColor = .white
 
         addSubview(collectionView)
+        addSubview(libraryButton)
 
         collectionView.backgroundColor = .white
         collectionView.alwaysBounceHorizontal = true
@@ -83,7 +112,22 @@ final class ImagePickerCarouselView: UIView, UICollectionViewDataSource, UIColle
         collectionView.dataSource = self
         collectionView.delegate = self
 
-        collectionView.register(ImageCell.self, forCellWithReuseIdentifier: "cell")
+        collectionView.register(ImageCell.self, forCellWithReuseIdentifier: "cell1")
+        collectionView.register(OperationCell.self, forCellWithReuseIdentifier: "cell2")
+
+        libraryButton.setImage(UIImage(named: "library"), for: .normal)
+        libraryButton.imageEdgeInsets = .init(top: 8, left: 8, bottom: 8, right: 8)
+        libraryButton.backgroundColor = .white
+        libraryButton.layer.shadowColor = UIColor.darkGray.withAlphaComponent(0.2).cgColor
+        libraryButton.layer.shadowOffset = .init(width: 0, height: 2)
+        libraryButton.layer.shadowRadius = 8
+        libraryButton.layer.shadowOpacity = 1
+
+        libraryButton.translatesAutoresizingMaskIntoConstraints = false
+        libraryButton.leftAnchor.constraint(equalTo: leftAnchor, constant: 16).isActive = true
+        libraryButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16).isActive = true
+
+        libraryButton.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
 
         autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
@@ -97,16 +141,24 @@ final class ImagePickerCarouselView: UIView, UICollectionViewDataSource, UIColle
 
     override func layoutSubviews() {
         super.layoutSubviews()
+
+        libraryButton.layer.cornerRadius = libraryButton.bounds.width / 2
         
+    }
+
+    @objc func didTapButton() {
+        print("tap library button")
     }
 
     private func setup() {
 
         libraryRequestAuthorization()
 
+        items.append(.b(()))
+
         let result = PHAsset.fetchAssets(with: .image, options: nil)
         result.enumerateObjects { [weak self] (obj, index, stop) in
-            self?.items.append(obj)
+            self?.items.append(.a(obj))
         }
 
         collectionView.reloadData()
@@ -137,48 +189,55 @@ final class ImagePickerCarouselView: UIView, UICollectionViewDataSource, UIColle
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        #warning("先頭のセルの場合は、一覧画面表示ボタンを追加→ライブラリ画面をモーダル表示")
-
-        #warning("カルーセル中の画像を選択した場合は、モーダルで編集画面を開く")
-
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? ImageCell else { return UICollectionViewCell() }
         let item = items[indexPath.row]
 
-        let options = PHImageRequestOptions()
-        options.deliveryMode = .highQualityFormat
-        options.isNetworkAccessAllowed = true
-        options.version = .current
-        options.resizeMode = .exact
+        switch item {
+        case .a(let a):
 
-//        imageManager.requestImageData(
-//            for: item,
-//            options: options,
-//            resultHandler: { (data, id, orientation, info) in
-//                if let data = data {
-//                    let image = UIImage(data: data)!
-//                    cell.set(image: image)
-//                }
-//        })
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as? ImageCell else {
+                return UICollectionViewCell() }
 
-        imageManager
-            .requestImage(
-                for: item,
-                targetSize: cell.bounds.size,
-                contentMode: .aspectFill,
-                options: nil,
-                resultHandler: { image, info in
-                    cell.set(image: image)
-            })
+            let options = PHImageRequestOptions()
+            options.deliveryMode = .highQualityFormat
+            options.isNetworkAccessAllowed = true
+            options.version = .current
+            options.resizeMode = .exact
 
-        return cell
+            imageManager
+                .requestImage(
+                    for: a,
+                    targetSize: cell.bounds.size,
+                    contentMode: .aspectFill,
+                    options: nil,
+                    resultHandler: { image, info in
+                        cell.set(image: image)
+                })
+            return cell
+
+        case .b:
+
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as? OperationCell else { return UICollectionViewCell() }
+
+            cell.set(image: UIImage(named: "library"))
+            return cell
+        }
     }
+
 
     // MARK: UICollectionViewDelegate
 
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
-        guard let cell = collectionView.cellForItem(at: indexPath) else { return }
-        cell.isSelected = !(cell.isSelected)
+        let item = items[indexPath.row]
+
+        switch item {
+        case .a(let a):
+            #warning("open image confirmation screen")
+        case .b(let b):
+            #warning("open image library screen")
+        }
+
     }
 
     // MARK: UICollectionViewDelegateFlowLayout
